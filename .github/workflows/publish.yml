@@ -1,17 +1,19 @@
 name: Publish
 
+# Ships the npm package when a GitHub release is published.
+# Required repo secret: NPM_TOKEN (npm automation token).
+
 on:
-  pull_request:
-    types: [closed]
-    branches: [main, master]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write  # npm provenance
 
 jobs:
-  publish:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release/')
+  npm:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +23,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm publish --access public --provenance
+      - name: Publish to npm
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
