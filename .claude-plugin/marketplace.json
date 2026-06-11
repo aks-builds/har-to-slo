@@ -1,10 +1,16 @@
 {
   "name": "har-to-slo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Turn HAR timing data into k6 SLO baselines",
   "author": "aks-builds",
   "license": "MIT",
-  "tags": ["k6", "performance", "har", "thresholds", "load-testing"],
+  "tags": [
+    "k6",
+    "performance",
+    "har",
+    "thresholds",
+    "load-testing"
+  ],
   "skills": [
     {
       "name": "har-to-slo",
