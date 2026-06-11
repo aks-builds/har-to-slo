@@ -1,6 +1,6 @@
 {
   "name": "har-to-slo",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Turn HAR timing data into k6 SLO baselines — your recordings already know your p95",
   "type": "module",
   "bin": {
