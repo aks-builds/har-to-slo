@@ -1,0 +1,41 @@
+// tests/integration.test.js
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const CLI = join(__dirname, '..', 'src', 'cli.js');
+const HAR = join(__dirname, 'fixtures', 'sample.har');
+
+test('CLI outputs valid k6 thresholds from fixture HAR', () => {
+  const output = execSync(`node ${CLI} --input "${HAR}"`).toString();
+  assert.ok(output.includes('thresholds'), 'output must contain thresholds');
+  assert.ok(output.includes('p(95)'), 'output must contain p(95) condition');
+  assert.ok(output.includes('options'), 'output must contain options export');
+});
+
+test('CLI --multiplier flag changes threshold value', () => {
+  const out1 = execSync(`node ${CLI} --input "${HAR}" --multiplier 1.0`).toString();
+  const out2 = execSync(`node ${CLI} --input "${HAR}" --multiplier 3.0`).toString();
+  const nums1 = (out1.match(/p\(95\)<(\d+)/g) ?? []).map(m => parseInt(m.match(/p\(95\)<(\d+)/)[1]));
+  const nums2 = (out2.match(/p\(95\)<(\d+)/g) ?? []).map(m => parseInt(m.match(/p\(95\)<(\d+)/)[1]));
+  assert.ok(nums2.length > 0, 'should have threshold values');
+  assert.ok(nums2.every((v, i) => v > (nums1[i] ?? 0)), 'higher multiplier should yield higher thresholds');
+});
+
+test('CLI --format json emits JSON not JS', () => {
+  const output = execSync(`node ${CLI} --input "${HAR}" --format json`).toString();
+  const parsed = JSON.parse(output);
+  assert.ok(parsed.thresholds, 'JSON output must have thresholds key');
+});
+
+test('CLI exits 1 with error when --input is missing', () => {
+  try {
+    execSync(`node ${CLI}`, { stdio: 'pipe' });
+    assert.fail('should have thrown');
+  } catch (e) {
+    assert.equal(e.status, 1, 'exit code should be 1');
+  }
+});
