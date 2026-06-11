@@ -1,6 +1,6 @@
 ---
-name: har-to-k6-thresholds
-description: Derive statistically sound k6 SLO thresholds from a HAR file's real timing data. Uses p95 baselines with configurable multiplier. Eliminates guesswork from load test thresholds.
+name: har-to-slo
+description: Turn HAR timing measurements into k6 SLO baselines. Computes p95 per route, applies configurable multiplier, outputs a ready-to-use thresholds{} block. Your recordings already know your p95.
 version: 0.0.1
 tools:
   - Bash
@@ -8,7 +8,7 @@ tools:
   - Write
 ---
 
-# har-to-k6-thresholds
+# har-to-slo
 
 Convert a HAR file's measured timing data into a ready-to-use k6 `thresholds {}` block.
 
@@ -21,19 +21,19 @@ Convert a HAR file's measured timing data into a ready-to-use k6 `thresholds {}`
 
 ```bash
 # Basic — outputs k6 thresholds block to stdout
-npx har-to-k6-thresholds --input recording.har
+npx har-to-slo --input recording.har
 
 # Stricter SLOs (1.2× p95 instead of default 1.5×)
-npx har-to-k6-thresholds --input recording.har --multiplier 1.2
+npx har-to-slo --input recording.har --multiplier 1.2
 
 # JSON output for CI pipelines
-npx har-to-k6-thresholds --input recording.har --format json
+npx har-to-slo --input recording.har --format json
 
 # Write directly to a k6 script file
-npx har-to-k6-thresholds --input recording.har --output k6/thresholds.js
+npx har-to-slo --input recording.har --output k6/thresholds.js
 
 # With LLM rationale annotations (requires ANTHROPIC_API_KEY)
-npx har-to-k6-thresholds --input recording.har --explain
+npx har-to-slo --input recording.har --explain
 ```
 
 ## What it does

@@ -1,10 +1,10 @@
 {
-  "name": "har-to-k6-thresholds",
+  "name": "har-to-slo",
   "version": "0.0.1",
-  "description": "Convert HAR timing data into k6 thresholds baselines — no more guessing SLOs",
+  "description": "Turn HAR timing data into k6 SLO baselines — your recordings already know your p95",
   "type": "module",
   "bin": {
-    "har-to-k6-thresholds": "src/cli.js"
+    "har-to-slo": "src/cli.js"
   },
   "files": [
     "src/",
@@ -28,6 +28,6 @@
       "optional": true
     }
   },
-  "keywords": ["k6", "har", "thresholds", "performance", "load-testing", "slo"],
-  "repository": { "type": "git", "url": "https://github.com/aks-builds/har-to-k6-thresholds" }
+  "keywords": ["slo", "har", "k6", "performance-baseline", "load-testing", "thresholds", "p95", "slo-generator"],
+  "repository": { "type": "git", "url": "https://github.com/aks-builds/har-to-slo" }
 }
