@@ -1,0 +1,25 @@
+{
+  "name": "har-to-k6-thresholds",
+  "version": "0.0.1",
+  "description": "Convert HAR timing data into k6 thresholds baselines — no more guessing SLOs",
+  "type": "module",
+  "bin": {
+    "har-to-k6-thresholds": "src/cli.js"
+  },
+  "files": [
+    "src/",
+    "skills/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": { "node": ">=20" },
+  "author": "aks-builds <its.aks@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "test:watch": "node --test --watch tests/**/*.test.js"
+  },
+  "keywords": ["k6", "har", "thresholds", "performance", "load-testing", "slo"],
+  "repository": { "type": "git", "url": "https://github.com/aks-builds/har-to-k6-thresholds" }
+}
