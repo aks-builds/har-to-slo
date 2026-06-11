@@ -1,0 +1,15 @@
+{
+  "name": "har-to-k6-thresholds",
+  "version": "0.0.1",
+  "description": "Convert HAR timing data into k6 thresholds baselines",
+  "author": "aks-builds",
+  "license": "MIT",
+  "tags": ["k6", "performance", "har", "thresholds", "load-testing"],
+  "skills": [
+    {
+      "name": "har-to-k6-thresholds",
+      "path": "skills/har-to-k6-thresholds.md",
+      "description": "Derive k6 SLO thresholds from HAR file timing data"
+    }
+  ]
+}
