@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises';
  */
 export function parseHar(har) {
   return (har?.log?.entries ?? [])
-    .filter(e => typeof e.time === 'number')
+    .filter(e => typeof e.time === 'number' && !isNaN(e.time))
     .map(e => ({
       method: e.request.method.toUpperCase(),
       url: e.request.url,
@@ -23,6 +23,10 @@ export function parseHar(har) {
  * @param {string} filePath - absolute or relative path to .har file
  */
 export async function parseHarFile(filePath) {
-  const raw = await readFile(filePath, 'utf8');
-  return parseHar(JSON.parse(raw));
+  try {
+    const raw = await readFile(filePath, 'utf8');
+    return parseHar(JSON.parse(raw));
+  } catch (err) {
+    throw new Error(`Failed to read HAR file at "${filePath}": ${err.message}`);
+  }
 }
