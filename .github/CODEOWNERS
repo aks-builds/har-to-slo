@@ -1,0 +1,30 @@
+# Code owners for har-to-slo
+#
+# Default reviewer for all files in this repo.
+# Order matters — last matching pattern takes precedence.
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything
+*                           @aks-builds
+
+# Core prediction modules — reviewed tightly
+/src/                       @aks-builds
+/src/parser.js              @aks-builds
+/src/routes.js              @aks-builds
+/src/stats.js               @aks-builds
+/src/emitter.js             @aks-builds
+/src/explain.js             @aks-builds
+
+# CLI entry point
+/src/cli.js                 @aks-builds
+
+# Claude skill & marketplace metadata
+/skills/                    @aks-builds
+/.claude-plugin/            @aks-builds
+
+# Release plumbing
+/.github/                   @aks-builds
+/package.json               @aks-builds
+/package-lock.json          @aks-builds
+/CHANGELOG.md               @aks-builds
+/LICENSE                    @aks-builds
