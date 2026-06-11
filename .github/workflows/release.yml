@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump type
+        required: true
+        type: choice
+        options: [prerelease, patch, minor, major]
+        default: patch
+      preid:
+        description: Pre-release ID (only for prerelease)
+        required: false
+        default: beta
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.RELEASE_PR_PAT }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Set git identity
+        run: |
+          git config user.name "aks-builds"
+          git config user.email "its.aks@outlook.com"
+      - name: Bump version
+        id: bump
+        run: |
+          if [ "${{ inputs.bump }}" = "prerelease" ]; then
+            npm version prerelease --preid=${{ inputs.preid }} --no-git-tag-version
+          else
+            npm version ${{ inputs.bump }} --no-git-tag-version
+          fi
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Roll CHANGELOG
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          sed -i "s/## \[Unreleased\]/## [Unreleased]\n\n## [${{ steps.bump.outputs.version }}] - $DATE/" CHANGELOG.md
+      - name: Sync version to plugin.json and marketplace.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const v = '${{ steps.bump.outputs.version }}';
+            ['plugin.json','marketplace.json'].forEach(f => {
+              const p = '.claude-plugin/' + f;
+              const d = JSON.parse(fs.readFileSync(p,'utf8'));
+              d.version = v;
+              fs.writeFileSync(p, JSON.stringify(d, null, 2) + '\n');
+            });
+          "
+      - name: Push release branch and open PR
+        run: |
+          BRANCH="release/v${{ steps.bump.outputs.version }}"
+          git checkout -b $BRANCH
+          git add package.json CHANGELOG.md .claude-plugin/
+          git commit -m "release: v${{ steps.bump.outputs.version }}"
+          git push origin $BRANCH
+          gh pr create \
+            --title "release: v${{ steps.bump.outputs.version }}" \
+            --body "Automated release bump to v${{ steps.bump.outputs.version }}" \
+            --base main \
+            --head $BRANCH
+          gh pr merge --auto --squash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PR_PAT }}
