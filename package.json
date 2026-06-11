@@ -17,8 +17,16 @@
   "author": "aks-builds <its.aks@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "test": "node --test tests/**/*.test.js",
+    "test": "node --test tests/emitter.test.js tests/integration.test.js tests/parser.test.js tests/routes.test.js tests/stats.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.20.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    }
   },
   "keywords": ["k6", "har", "thresholds", "performance", "load-testing", "slo"],
   "repository": { "type": "git", "url": "https://github.com/aks-builds/har-to-k6-thresholds" }

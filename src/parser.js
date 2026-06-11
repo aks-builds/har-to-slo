@@ -10,12 +10,16 @@ import { readFile } from 'node:fs/promises';
 export function parseHar(har) {
   return (har?.log?.entries ?? [])
     .filter(e => typeof e.time === 'number' && !isNaN(e.time))
-    .map(e => ({
-      method: e.request.method.toUpperCase(),
-      url: e.request.url,
-      status: e.response.status,
-      time: e.time
-    }));
+    .map(e => {
+      if (!e.request?.method || !e.response?.status) return null;
+      return {
+        method: e.request.method.toUpperCase(),
+        url: e.request.url,
+        status: e.response.status,
+        time: e.time
+      };
+    })
+    .filter(Boolean);
 }
 
 /**

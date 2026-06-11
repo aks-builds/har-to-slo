@@ -24,17 +24,18 @@ export function computeGroups(entries, collapser) {
   const groups = {};
   for (const [key, times] of Object.entries(buckets)) {
     const sorted = [...times].sort((a, b) => a - b);
-    const trimTo = Math.floor(sorted.length * 0.95);
-    const trimmed = trimTo > 0 ? sorted.slice(0, trimTo) : sorted;
+    // Trim top 5% outliers for min/max display only
+    const trimTo = Math.max(1, Math.floor(sorted.length * 0.95));
+    const trimmed = sorted.slice(0, trimTo);
 
     groups[key] = {
       count: times.length,
       min:   trimmed[0],
       max:   trimmed[trimmed.length - 1],
-      p50:   percentile(trimmed, 50),
-      p75:   percentile(trimmed, 75),
-      p95:   percentile(trimmed, 95),
-      p99:   percentile(trimmed, 99),
+      p50:   percentile(sorted, 50),   // percentiles on FULL data
+      p75:   percentile(sorted, 75),
+      p95:   percentile(sorted, 95),
+      p99:   percentile(sorted, 99),
     };
   }
   return groups;

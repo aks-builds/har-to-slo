@@ -28,12 +28,17 @@ test('computeGroups groups entries by method+template and computes stats', () =>
   assert.equal(groups['POST /orders'].count, 1);
 });
 
-test('computeGroups trims outliers before computing percentiles', () => {
+test('computeGroups trims outliers from min/max but not from percentiles', () => {
   const entries = Array.from({ length: 19 }, (_, i) => ({
     method: 'GET', url: 'https://api.example.com/items/1', status: 200, time: 100 + i
   }));
   entries.push({ method: 'GET', url: 'https://api.example.com/items/1', status: 200, time: 99999 });
 
   const groups = computeGroups(entries, collapseUrl);
-  assert.ok(groups['GET /items/{id}'].p95 < 1000, `p95=${groups['GET /items/{id}'].p95} should be <1000`);
+  const g = groups['GET /items/{id}'];
+  // max should be trimmed (99999 excluded from max display)
+  assert.ok(g.max < 1000, `max=${g.max} should exclude outlier`);
+  // p99 on full 20 entries: sorted[ceil(0.99*20)-1] = sorted[19] = 99999
+  assert.ok(g.p99 > 1000, `p99=${g.p99} should include outlier in full dataset`);
+  assert.equal(g.count, 20);
 });

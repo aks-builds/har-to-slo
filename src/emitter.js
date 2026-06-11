@@ -27,5 +27,5 @@ export function emitThresholds(groups, multiplier = 1.5) {
 
 /** Convert a route key like 'GET /users/{id}' into a safe k6 tag value. */
 function sanitiseKey(key) {
-  return key.replace(/[^a-zA-Z0-9_/-]/g, '_').replace(/\s+/g, '_');
+  return key.replace(/[^a-zA-Z0-9_/-]/g, '_');
 }
