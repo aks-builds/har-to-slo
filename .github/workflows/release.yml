@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.RELEASE_PR_PAT }}
+          token: ${{ secrets.APPROVER_PAT }}
 
       - uses: actions/setup-node@v4
         with:
@@ -74,4 +74,4 @@ jobs:
             --head "$BRANCH"
           gh pr merge --auto --squash
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_PR_PAT }}
+          GH_TOKEN: ${{ secrets.APPROVER_PAT }}
