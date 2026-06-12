@@ -4,6 +4,8 @@
 
 ## [0.1.0] - 2026-06-12
 
+## [0.1.0] - 2026-06-12
+
 ### Added
 - `--source k6` — derive SLO thresholds from k6 `--summary-export` JSON output
 - `--source logs` — derive thresholds from nginx, Apache, ALB, or NDJSON access logs

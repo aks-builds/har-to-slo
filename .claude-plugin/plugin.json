@@ -1,6 +1,6 @@
 {
   "name": "har-to-slo",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Derive k6 SLO thresholds from HAR timing data",
   "skills": [
     "skills/har-to-slo.md"
