@@ -1,0 +1,6 @@
+{"traceId":"aaa","spanId":"1","name":"GET /api/users/:id","kind":"SPAN_KIND_SERVER","durationNano":245300000,"attributes":{"http.method":"GET","http.route":"/api/users/{id}","http.status_code":200}}
+{"traceId":"aaa","spanId":"2","name":"GET /api/users/:id","kind":"SPAN_KIND_SERVER","durationNano":182100000,"attributes":{"http.method":"GET","http.route":"/api/users/{id}","http.status_code":200}}
+{"traceId":"bbb","spanId":"3","name":"POST /api/orders","kind":"SPAN_KIND_SERVER","durationNano":650000000,"attributes":{"http.method":"POST","http.route":"/api/orders","http.status_code":201}}
+{"traceId":"ccc","spanId":"4","name":"internal-cache-lookup","kind":"SPAN_KIND_INTERNAL","durationNano":5000000,"attributes":{}}
+{"traceId":"ddd","spanId":"5","name":"GET /api/users/:id","kind":"SERVER","durationNano":310500000,"attributes":{"http.method":"GET","http.route":"/api/users/{id}","http.status_code":200}}
+{"traceId":"eee","spanId":"6","name":"GET /health","kind":2,"durationNano":12000000,"attributes":{"http.method":"GET","http.route":"/health","http.status_code":200}}

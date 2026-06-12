@@ -72,6 +72,35 @@ npx har-to-slo --input recording.har --explain
 
 ---
 
+## Supported sources
+
+| Source | Command | What it reads |
+|---|---|---|
+| `har` (default) | `har-to-slo --input recording.har` | HAR file timing data |
+| `k6` | `har-to-slo --source k6 --input summary.json` | k6 `--summary-export` JSON |
+| `logs` | `har-to-slo --source logs --input nginx.log` | nginx / ALB / NDJSON access logs |
+| `otel` | `har-to-slo --source otel --input traces.jsonl` | OpenTelemetry trace JSONL export |
+| `prometheus` | `har-to-slo --source prometheus --url http://prom:9090 --query http_request_duration_seconds` | Prometheus / Mimir HTTP API |
+
+### Using with the Grafana stack
+
+```bash
+# From a k6 load test run
+k6 run --summary-export summary.json load-test.js
+har-to-slo --source k6 --input summary.json
+
+# From Grafana Mimir (or any Prometheus)
+har-to-slo --source prometheus \
+  --url http://mimir.internal:9090 \
+  --query http_request_duration_seconds \
+  --range 30d
+
+# From Grafana Tempo trace export (OTEL JSONL)
+har-to-slo --source otel --input tempo-export.jsonl
+```
+
+---
+
 ## How it works
 
 ```

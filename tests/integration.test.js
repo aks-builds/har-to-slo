@@ -8,6 +8,9 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CLI = join(__dirname, '..', 'src', 'cli.js');
 const HAR = join(__dirname, 'fixtures', 'sample.har');
+const K6_FIXTURE   = join(__dirname, 'fixtures', 'k6-summary.json');
+const OTEL_FIXTURE  = join(__dirname, 'fixtures', 'traces.jsonl');
+const LOGS_FIXTURE  = join(__dirname, 'fixtures', 'nginx-sample.log');
 
 test('CLI outputs valid k6 thresholds from fixture HAR', () => {
   const output = execSync(`node ${CLI} --input "${HAR}"`).toString();
@@ -38,4 +41,44 @@ test('CLI exits 1 with error when --input is missing', () => {
   } catch (e) {
     assert.equal(e.status, 1, 'exit code should be 1');
   }
+});
+
+test('CLI --source k6 outputs thresholds from k6 summary', () => {
+  const output = execSync(`node ${CLI} --source k6 --input "${K6_FIXTURE}"`).toString();
+  assert.ok(output.includes('thresholds'), 'must include thresholds');
+  assert.ok(output.includes('p(95)'), 'must include p(95) condition');
+  assert.ok(output.includes('options'), 'must export options');
+});
+
+test('CLI --source k6 --format json returns JSON with thresholds key', () => {
+  const output = execSync(`node ${CLI} --source k6 --input "${K6_FIXTURE}" --format json`).toString();
+  const parsed = JSON.parse(output);
+  assert.ok(parsed.thresholds, 'JSON must have thresholds key');
+});
+
+test('CLI exits 1 for unknown --source', () => {
+  try {
+    execSync(`node ${CLI} --source nonexistent --input x.har`, { stdio: 'pipe' });
+    assert.fail('should exit 1');
+  } catch (e) {
+    assert.equal(e.status, 1);
+  }
+});
+
+test('CLI default (no --source) produces same output as --source har', () => {
+  const outDefault  = execSync(`node ${CLI} --input "${HAR}"`).toString();
+  const outExplicit = execSync(`node ${CLI} --source har --input "${HAR}"`).toString();
+  assert.equal(outDefault, outExplicit, 'omitting --source should be identical to --source har');
+});
+
+test('CLI --source otel produces thresholds from OTEL trace fixture', () => {
+  const output = execSync(`node ${CLI} --source otel --input "${OTEL_FIXTURE}"`).toString();
+  assert.ok(output.includes('thresholds'), 'must include thresholds');
+  assert.ok(output.includes('p(95)'), 'must include p(95)');
+});
+
+test('CLI --source logs produces thresholds from nginx fixture', () => {
+  const output = execSync(`node ${CLI} --source logs --input "${LOGS_FIXTURE}"`).toString();
+  assert.ok(output.includes('thresholds'));
+  assert.ok(output.includes('p(95)'));
 });
