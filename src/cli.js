@@ -62,7 +62,7 @@ const SOURCES = {
   prometheus: () => import('./sources/prometheus.js'),
 };
 
-const source = argv.source ?? 'har';
+const source = argv.source;
 if (!SOURCES[source]) {
   process.stderr.write(
     `Error: unknown --source "${source}". Use: ${Object.keys(SOURCES).join(', ')}\n`

@@ -63,7 +63,8 @@ test('CLI exits 1 for unknown --source', () => {
   }
 });
 
-test('CLI default (no --source) still works as HAR', () => {
-  const output = execSync(`node ${CLI} --input "${HAR}"`).toString();
-  assert.ok(output.includes('thresholds'));
+test('CLI default (no --source) produces same output as --source har', () => {
+  const outDefault  = execSync(`node ${CLI} --input "${HAR}"`).toString();
+  const outExplicit = execSync(`node ${CLI} --source har --input "${HAR}"`).toString();
+  assert.equal(outDefault, outExplicit, 'omitting --source should be identical to --source har');
 });
