@@ -25,7 +25,7 @@ async function fetchJson(baseUrl, pathname, params, extraHeaders = {}) {
         catch { reject(new Error(`Non-JSON response from Prometheus: ${body.slice(0, 100)}`)); }
       });
     });
-    req.on('error', reject);
+    req.on('error', (err) => reject(new Error(`Cannot reach Prometheus at ${opts.hostname}:${opts.port}: ${err.message || err.code}`)));
     req.setTimeout(15_000, () => { req.destroy(); reject(new Error('Prometheus request timed out')); });
   });
 }

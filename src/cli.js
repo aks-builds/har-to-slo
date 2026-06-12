@@ -4,25 +4,31 @@ import { parseArgs } from 'node:util';
 import { writeFileSync } from 'node:fs';
 import { emitThresholds } from './emitter.js';
 
-const { values: argv } = parseArgs({
-  options: {
-    source:       { type: 'string',  short: 's', default: 'har' },
-    input:        { type: 'string',  short: 'i' },
-    multiplier:   { type: 'string',  short: 'm', default: '1.5' },
-    format:       { type: 'string',  short: 'f', default: 'js' },
-    output:       { type: 'string',  short: 'o' },
-    explain:      { type: 'boolean', short: 'e', default: false },
-    // prometheus flags
-    url:          { type: 'string' },
-    query:        { type: 'string',  short: 'Q' },
-    range:        { type: 'string',  default: '7d' },
-    step:         { type: 'string',  default: '1h' },
-    'prom-header':{ type: 'string' },
-    help:         { type: 'boolean', short: 'h', default: false },
-  },
-  allowPositionals: false,
-  strict: false,
-});
+let argv;
+try {
+  ({ values: argv } = parseArgs({
+    options: {
+      source:       { type: 'string',  short: 's', default: 'har' },
+      input:        { type: 'string',  short: 'i' },
+      multiplier:   { type: 'string',  short: 'm', default: '1.5' },
+      format:       { type: 'string',  short: 'f', default: 'js' },
+      output:       { type: 'string',  short: 'o' },
+      explain:      { type: 'boolean', short: 'e', default: false },
+      // prometheus flags
+      url:          { type: 'string' },
+      query:        { type: 'string',  short: 'Q' },
+      range:        { type: 'string',  default: '7d' },
+      step:         { type: 'string',  default: '1h' },
+      'prom-header':{ type: 'string' },
+      help:         { type: 'boolean', short: 'h', default: false },
+    },
+    allowPositionals: false,
+    strict: false,
+  }));
+} catch (err) {
+  process.stderr.write(`Error: ${err.message}\nRun with --help for usage.\n`);
+  process.exit(1);
+}
 
 if (argv.help) {
   process.stdout.write(`

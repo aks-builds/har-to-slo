@@ -46,7 +46,7 @@ export async function ingest(argv) {
     const rawPath = attrs['http.route'] ?? attrs['http.target'] ?? '';
     if (!rawPath) continue;
 
-    const durationMs = (span.durationNano ?? 0) / 1_000_000;
+    const durationMs = Math.round((span.durationNano ?? 0) / 1_000_000);
     if (durationMs <= 0) continue;
 
     const fakeUrl = rawPath.startsWith('http') ? rawPath : `https://host${rawPath}`;
