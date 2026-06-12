@@ -46,3 +46,23 @@ test('ingest logs auto-detects NDJSON format', async () => {
     try { unlinkSync(tmp); } catch {}
   }
 });
+
+test('ingest logs NDJSON respects _ms suffix and does not multiply by 1000', async () => {
+  const { writeFileSync, unlinkSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join: j } = await import('node:path');
+  const tmp = j(tmpdir(), 'test-ndjson-ms.log');
+  writeFileSync(tmp, [
+    JSON.stringify({ method: 'GET', path: '/fast', status: 200, duration_ms: 5 }),
+    JSON.stringify({ method: 'GET', path: '/fast', status: 200, duration_ms: 7 }),
+    JSON.stringify({ method: 'GET', path: '/fast', status: 200, duration_ms: 9 }),
+  ].join('\n'));
+  try {
+    const groups = await ingest({ input: tmp });
+    const g = groups.find(g => g.template === '/fast');
+    assert.ok(g, '/fast group must exist');
+    assert.ok(g.p95 < 100, `p95=${g.p95} should be <100ms (not 7000ms from seconds misclassification)`);
+  } finally {
+    try { unlinkSync(tmp); } catch {}
+  }
+});

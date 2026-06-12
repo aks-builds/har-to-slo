@@ -19,15 +19,17 @@ function parseNginxLine(line) {
 function parseAlbLine(line) {
   if (!line || line.startsWith('#')) return null;
   const parts = line.split(' ');
-  if (parts.length < 13) return null;
+  if (parts.length < 14) return null;
   try {
-    const reqTime = parseFloat(parts[7]);
+    const reqTime = parseFloat(parts[5]) + parseFloat(parts[6]) + parseFloat(parts[7]);
     const reqField = parts[12].replace(/"/g, '');
-    const [, method, fullUrl] = reqField.split(' ');
+    const [method, fullUrl] = reqField.split(' ');
     if (!method || !fullUrl) return null;
     const path = fullUrl.startsWith('http') ? new URL(fullUrl).pathname : fullUrl.split('?')[0];
-    const status = parseInt(parts[9], 10);
-    return { method: method.toUpperCase(), path, status, time: Math.round(reqTime * 1000) };
+    const status = parseInt(parts[8], 10);
+    const time = Math.round(reqTime * 1000);
+    if (time <= 0) return null;
+    return { method: method.toUpperCase(), path, status, time };
   } catch { return null; }
 }
 
@@ -48,10 +50,11 @@ function parseNdjsonLine(line) {
     const method   = pick(obj, METHOD_KEYS);
     let   path     = pick(obj, PATH_KEYS);
     const status   = parseInt(pick(obj, STATUS_KEYS), 10);
-    let   duration = parseFloat(pick(obj, DURATION_KEYS) ?? '0');
+    const durationKey = DURATION_KEYS.find(k => obj[k] !== undefined);
+    let duration = parseFloat(obj[durationKey] ?? '0');
     if (!method || !path || isNaN(status) || duration <= 0) return null;
     path = path.split('?')[0];
-    if (duration < 10) duration = duration * 1000;
+    if (durationKey && !durationKey.endsWith('_ms')) duration = duration * 1000;
     return { method: method.toUpperCase(), path, status, time: Math.round(duration) };
   } catch { return null; }
 }
