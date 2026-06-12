@@ -12,7 +12,12 @@ const SERVER_KINDS = new Set(['SPAN_KIND_SERVER', 'SERVER', 2, '2']);
  * Wrapping with decodeURIComponent restores them to {id} form.
  */
 function otelCollapseUrl(url) {
-  return decodeURIComponent(collapseUrl(url));
+  const collapsed = collapseUrl(url);
+  try {
+    return decodeURIComponent(collapsed);
+  } catch {
+    return collapsed;
+  }
 }
 
 export async function ingest(argv) {
@@ -38,7 +43,7 @@ export async function ingest(argv) {
 
     const attrs   = span.attributes ?? {};
     const method  = (attrs['http.method'] ?? 'GET').toUpperCase();
-    const rawPath = attrs['http.route'] ?? attrs['http.target'] ?? span.name ?? '';
+    const rawPath = attrs['http.route'] ?? attrs['http.target'] ?? '';
     if (!rawPath) continue;
 
     const durationMs = (span.durationNano ?? 0) / 1_000_000;
