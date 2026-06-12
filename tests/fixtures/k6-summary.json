@@ -1,0 +1,41 @@
+{
+  "metrics": {
+    "http_req_duration{expected_response:true,method:GET,url:https://api.example.com/users/1}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 157.3, "min": 45.2, "med": 142.5, "max": 890.1,
+        "p(90)": 245.3, "p(95)": 310.7, "p(99)": 456.2, "count": 150
+      }
+    },
+    "http_req_duration{expected_response:true,method:GET,url:https://api.example.com/users/2}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 163.1, "min": 50.1, "med": 148.3, "max": 820.5,
+        "p(90)": 255.1, "p(95)": 318.4, "p(99)": 461.0, "count": 148
+      }
+    },
+    "http_req_duration{expected_response:true,method:POST,url:https://api.example.com/orders}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 450.2, "min": 200.1, "med": 420.5, "max": 1200.8,
+        "p(90)": 680.3, "p(95)": 780.5, "p(99)": 950.2, "count": 75
+      }
+    },
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": { "count": 373, "rate": 12.4 }
+    },
+    "http_req_duration{expected_response:true,method:GET,url:https://api.example.com/health}": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 12.5, "min": 8.0, "med": 11.0, "max": 45.0,
+        "p(90)": 18.0, "p(95)": 22.0, "p(99)": 40.0, "count": 300
+      }
+    }
+  }
+}
