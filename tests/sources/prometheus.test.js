@@ -94,3 +94,44 @@ test('ingest prometheus throws when --url missing', async () => {
 test('ingest prometheus throws when --query missing', async () => {
   await assert.rejects(() => ingest({ url: 'http://localhost:9090' }), /--query/);
 });
+
+test('ingest prometheus excludes routes where Prometheus returns NaN or +Inf', async () => {
+  const srv = await startMockProm((req, res) => {
+    const url = new URL(req.url, 'http://localhost');
+    const query = url.searchParams.get('query') ?? '';
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    if (url.pathname === '/api/v1/labels')
+      return res.end(JSON.stringify({ status: 'success', data: ['http_route'] }));
+    if (query.includes('0.95')) {
+      return res.end(JSON.stringify({
+        status: 'success',
+        data: {
+          resultType: 'vector',
+          result: [
+            { metric: { http_route: '/good' },    value: [1, '0.200'] },   // 200ms — valid
+            { metric: { http_route: '/nan-route'}, value: [1, 'NaN'] },    // NaN — exclude
+            { metric: { http_route: '/inf-route'}, value: [1, '+Inf'] },   // +Inf — exclude
+          ],
+        },
+      }));
+    }
+    res.end(JSON.stringify({ status: 'success', data: { resultType: 'vector', result: [] } }));
+  });
+
+  const { port } = srv.address();
+  try {
+    const groups = await ingest({
+      url: `http://127.0.0.1:${port}`,
+      query: 'http_request_duration_seconds',
+      range: '7d', step: '1h',
+    });
+    const templates = groups.map(g => g.template);
+    assert.ok(templates.includes('/good'), '/good route must be included');
+    assert.ok(!templates.includes('/nan-route'), '/nan-route must be excluded');
+    assert.ok(!templates.includes('/inf-route'), '/inf-route must be excluded');
+    const good = groups.find(g => g.template === '/good');
+    assert.ok(good.p95 >= 195 && good.p95 <= 205, `p95=${good.p95} should be ~200ms`);
+  } finally {
+    srv.close();
+  }
+});

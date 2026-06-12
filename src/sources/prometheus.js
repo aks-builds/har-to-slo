@@ -78,7 +78,7 @@ export async function ingest(argv) {
     if (!rawRoute) continue;
 
     const p95Ms = Math.round(parseFloat(item.value[1]) * 1000);
-    if (p95Ms <= 0) continue;
+    if (!Number.isFinite(p95Ms) || p95Ms <= 0) continue;
 
     const fakeUrl  = rawRoute.startsWith('http') ? rawRoute : `https://host${rawRoute}`;
     const template = collapseUrl(fakeUrl);
@@ -88,7 +88,9 @@ export async function ingest(argv) {
 
     const getP = (name) => {
       const r = pctResults[name].find(x => x.metric[routeLabel] === rawRoute);
-      return r ? Math.round(parseFloat(r.value[1]) * 1000) : 0;
+      if (!r) return 0;
+      const ms = Math.round(parseFloat(r.value[1]) * 1000);
+      return Number.isFinite(ms) ? ms : 0;
     };
 
     groups.push({
