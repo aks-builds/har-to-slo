@@ -21,6 +21,10 @@ computes p95 baselines per route, and outputs a ready-to-use k6 `thresholds {}` 
 
 <br/>
 
+<img src=".github/media/how-it-works.png" width="900" alt="How har-to-slo works: five latency sources (HAR, k6, access logs, OTel, Prometheus) are ingested into a common shape, normalized and aggregated into per-route percentiles, turned into a p95-based threshold, optionally annotated by Claude, and emitted as a k6 thresholds block" />
+
+<br/>
+
 ![har-to-slo running against a real 48-entry HAR — 6 routes collapsed, p95 baselines with 1.5× multiplier](.github/media/demo.svg)
 
 <sub>☝️ Real output from a 48-entry HAR. Six routes, all HTTP methods, zero configuration.</sub>
